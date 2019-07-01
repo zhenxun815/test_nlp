@@ -8,7 +8,7 @@
 # @Email: GuoYiheng89@gmail.com
 # @Time: 7/1/2019 14:48
 
-from src.stanford.worker import StanfordWorker
+from stanford.worker import StanfordWorker
 
 
 def test_stanford_segmenter():
