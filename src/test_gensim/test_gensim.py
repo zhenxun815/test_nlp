@@ -11,6 +11,8 @@
 from gensim import corpora
 from gensim.utils import simple_preprocess
 
+from src.test_gensim.read_files import ReadTxtUnderDir
+
 
 def tokens_file2token_list(tokens_file):
     with open(tokens_file, 'r', encoding='utf-8') as f:
@@ -20,10 +22,6 @@ def tokens_file2token_list(tokens_file):
 def docs_list2token_list(documents):
     # return [[text for text in doc.split()] for doc in documents]
     return [simple_preprocess(doc, min_len=1) for doc in documents]
-
-
-def tokens_files2token_list(base_dir):
-    pass
 
 
 def test_gen_dict_from_list():
@@ -48,5 +46,11 @@ def test_gen_dict_from_file(seg_file):
     print('dict is {}'.format(dict_from_file.token2id))
 
 
-test_gen_dict_from_list()
+def test_gen_dit_from_files(test_dir):
+    dict_from_files = corpora.Dictionary(ReadTxtUnderDir(test_dir))
+    print('dictionary is {}'.format(dict_from_files.token2id))
+
+
+# test_gen_dict_from_list()
 # test_gen_dict_from_file('../resources/CN105253527A.seg')
+test_gen_dit_from_files('../resources/')
