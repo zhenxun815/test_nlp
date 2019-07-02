@@ -9,19 +9,8 @@
 # @Time: 7/1/2019 15:36
 
 from gensim import corpora
-from gensim.utils import simple_preprocess
-
 from test_gensim.dictionary.read_files import ReadTxtUnderDir
-
-
-def tokens_file2token_list(tokens_file):
-    with open(tokens_file, 'r', encoding='utf-8') as f:
-        return [simple_preprocess(line, min_len=1) for line in f]
-
-
-def docs_list2token_list(documents):
-    # return [[text for text in doc.split()] for doc in documents]
-    return [simple_preprocess(doc, min_len=1) for doc in documents]
+from test_gensim.dictionary.gen_token_list import *
 
 
 def test_gen_dict_from_list():
