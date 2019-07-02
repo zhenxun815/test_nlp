@@ -8,14 +8,20 @@
 # @Email: GuoYiheng89@gmail.com
 # @Time: 7/1/2019 14:48
 
-from stanford.worker import StanfordWorker
+from stanford.worker import SegmentWorker
 
 
-def test_stanford_segmenter():
-    worker = StanfordWorker()
-    tokens = worker.segment_file('../resources/CN105253527A')
-    for token in tokens:
-        print(token)
+def test_seg2list():
+    worker = SegmentWorker()
+    tokens = worker.segment_file_to_list('../resources/CN104188073B')
+    for i, token in enumerate(tokens):
+        print('token {} is {}'.format(i, token))
 
 
-test_stanford_segmenter()
+def test_seg2file(origin_file, dest_file):
+    worker = SegmentWorker()
+    worker.seg_file2file(origin_file, dest_file)
+
+
+# test_seg2list()
+test_seg2file('../resources/CN105253527A', '../resources/CN105253527A.seg')
