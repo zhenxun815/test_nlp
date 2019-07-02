@@ -24,7 +24,7 @@ Examples
 ```
 
 ```
-gensim.utils.simple_preprocess()
+gensim.utils.simple_preprocess(doc, deacc=False, min_len=2, max_len=15)
 
 Convert a document into a list of tokens (also with lowercase 
 and optional de-accents),
