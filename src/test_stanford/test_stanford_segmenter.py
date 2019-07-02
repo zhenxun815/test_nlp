@@ -13,7 +13,7 @@ from stanford.worker import SegmentWorker
 
 def test_seg2list():
     worker = SegmentWorker()
-    tokens = worker.segment_file_to_list('../resources/CN104188073B')
+    tokens = worker.seg_file2list('../resources/CN104188073B')
     for i, token in enumerate(tokens):
         print('token {} is {}'.format(i, token))
 
