@@ -15,7 +15,7 @@ from nltk.tokenize.stanford_segmenter import StanfordSegmenter
 from os import path
 
 
-class StanfordWorker:
+class SegmentWorker:
 
     def __init__(self):
         file_path = path.realpath(__file__)
@@ -31,14 +31,26 @@ class StanfordWorker:
             path_to_dict=self.path_to_dict,
             path_to_sihan_corpora_dict=self.path_to_sihan_corpora_dict)
 
-    def segment_file(self, origin_file):
-        """segment a text file and return array of tokens"""
-        seg_result = self.seg.segment_file(origin_file)
+    def seg_file(self, file_to_segment):
+        """segment a file and return the result string"""
+        seg_result = self.seg.segment_file(file_to_segment)
 
         translator = str.maketrans('', '', string.digits)
         seg_result = seg_result.translate(translator)
+        seg_result = re.sub('[\\\\.!/_,$%^*(+\\"\']+|[+—！，：；。？、~@#￥%…&*（）]+', '', seg_result)
+        # print(seg_result)
+        return seg_result
 
-        seg_result = re.sub("[\.\!\/_,$%^*(+\"\']+|[+—！，：；。？、~@#￥%…&*（）]+", "", seg_result)
-        print(seg_result)
-
+    def seg_file2list(self, file_to_segment):
+        """segment a text file and return array of tokens"""
+        seg_result = self.seg_file(file_to_segment)
+        # print(seg_result)
         return seg_result.split()
+
+    def seg_file2file(self, origin_file, dest_file):
+        """segment a text file and write result tokens to another file"""
+        seg_result = self.seg_file(origin_file)
+        seg_result = re.sub('\\s+', ' ', seg_result)
+        # print(seg_result)
+        with open(dest_file, 'w', encoding='UTF-8') as f:
+            f.write(seg_result)
