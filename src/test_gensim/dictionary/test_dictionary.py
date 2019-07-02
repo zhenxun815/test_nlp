@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # @Description: 
-# @File: test_gensim.py
+# @File: test_dictionary.py
 # @Project: test_nlp
 # @Author: Yiheng
 # @Email: GuoYiheng89@gmail.com
@@ -11,7 +11,7 @@
 from gensim import corpora
 from gensim.utils import simple_preprocess
 
-from src.test_gensim.read_files import ReadTxtUnderDir
+from test_gensim.dictionary.read_files import ReadTxtUnderDir
 
 
 def tokens_file2token_list(tokens_file):
