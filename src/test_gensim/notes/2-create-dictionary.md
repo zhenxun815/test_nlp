@@ -9,7 +9,7 @@ documents : iterable of iterable of str, optional
     Documents that used for initialization.
 prune_at : int, optional
     Total number of unique words. Dictionary will keep not more than 
-    `prune_at` words.
+    `prune_at` words, default value is 2000000.
 
 Examples
 --------
@@ -68,20 +68,18 @@ texts2 = docs_list2token_list(documents2)
 
 dictionary = corpora.Dictionary(texts1)
 print('after add texts1, dictionary is {}'.format(dictionary.token2id))
-"""
-{'一种': 0, '大头菜': 1, '自然风': 2, '主要': 3, '包括': 4, 
-'风': 5, '底座': 6, '支柱': 7, '架': 8}
-"""
+
 
 dictionary.add_documents(texts2)
 print('after add texts2, dictionary is {}'.format(dictionary.token2id))
-"""
-{'一种': 0, '大头菜': 1, '自然风': 2, '主要': 3, '包括': 4, 
-'风': 5, '底座': 6, '支柱': 7, '架': 8, 
-'海绵拔': 9, '轮': 10, '上': 11, '支架': 12, '海绵': 13, 
-'设有': 14, '辊轴': 15, '二': 16, '同步': 17, '皮带轮': 18}
-"""
 
+
+```
+
+output:
+```
+after add texts1, dictionary is {'一种': 0, '大头菜': 1, '自然风': 2 ...... '风': 5, '底座': 6, '支柱': 7, '架': 8}
+after add texts2, dictionary is {'一种': 0, '大头菜': 1, '自然风': 2 ...... '二': 16, '同步': 17, '皮带轮': 18}
 ```
 
 #### 2.Create from File of Tokens
@@ -92,58 +90,101 @@ print('after add texts2, dictionary is {}'.format(dictionary.token2id))
 
 
 ```python
-from gensim import corpora
 from gensim.utils import simple_preprocess
 
 
-def gen_texts_list_from_file(tokens_file):
+def tokens_file2token_list(tokens_file, min_len=1):
     with open(tokens_file, 'r', encoding='utf-8') as f:
-        return [simple_preprocess(line, min_len=1) for line in f]
+        return [simple_preprocess(line, min_len=min_len) for line in f]
         
+```
 
-texts_list = gen_texts_list_from_file('../resources/CN105253527A.seg')
+test code:
+```python
+from gensim import corpora
+from test_gensim.dictionary.gen_token_list import tokens_file2token_list
+
+texts_list = tokens_file2token_list('../resources/CN105253527A.seg')
 dict_from_file = corpora.Dictionary(texts_list)
 print('dict is {}'.format(dict_from_file.token2id))
-"""
-{'一': 0, '上': 1, '其': 2, '包括': 3, '同步': 4, '和': 5, '在于': 6, '拔辊': 7, 
-'支架': 8, '机构': 9, '海绵拔': 10, '特征': 11, '电机': 12, '种': 13, '设有': 14, 
-......
-'连接': 36, '述': 37, '之间': 38, '座': 39, '海绵辊': 40, '螺纹': 41, '调节': 42, 
-'与': 43, '滚子': 44}
-"""
+
+```
+
+output:
+```
+dict is {'一': 0, '上': 1, '其': 2, '包括': 3, ...... '与': 43, '滚子': 44}
 ```
 
 #### 3.Create from Files of Tokens
 
 ```python
 import os
-from gensim import corpora
 from gensim.utils import simple_preprocess
 
 
-class ReadTxtUnderDir:
+class ReadTxt:
+    """
+    Read file line by line and parse each line to a tokens list.
+    Note that the generated list is a 2D list, each element list in it
+    consist of the tokens of each line.
+    """
 
-    def __init__(self, dir_path):
-        self.dir_path = dir_path
+    def __init__(self, file_path):
+        self.file_path = file_path
 
     def __iter__(self):
-        for file_name in os.listdir(self.dir_path):
-            if not file_name.endswith('seg'):
-                continue
-
-            file_path = os.path.join(self.dir_path, file_name)
-            for line in open(file_path, encoding='utf-8'):
-                yield simple_preprocess(line, min_len=2)
-                
-
-dict_from_files = corpora.Dictionary(ReadTxtUnderDir('../resources/'))
-print('dic from files is {}'.format(dict_from_files))
-"""
-{'主要': 0, '包括': 1, '在于': 2, '大头菜': 3, '所述': 4, '特征': 5, '脱水': 6, 
-... ...
-'辊轴': 242, '过度': 243, '带座': 244, '螺母': 245, '设在': 246, '轴承': 247, 
-'皮带': 248, '海绵辊': 249, '螺纹': 250, '调节': 251, '滚子': 252}
-"""
+        for line in open(self.file_path, encoding='utf-8'):
+            yield simple_preprocess(line, min_len=2)
 
 
+def preprocess_dir(dir_path):
+    """
+    Get tokens of all file under the given dir path
+    :param dir_path:
+    :return: dict, item key is file path, value is list of tokens
+    """
+    file_tokens = dict()
+    for file_name in os.listdir(dir_path):
+        if not file_name.endswith('seg'):
+            continue
+        file_path = os.path.join(dir_path, file_name)
+        file_tokens_list = preprocess_file(file_path)
+        file_tokens[file_path] = file_tokens_list
+    return file_tokens
+
+
+def preprocess_file(file_path):
+    """
+    Get list of tokens of the given file
+    :param file_path: file to be processed
+    :return: list of tokens
+    """
+    line_tokens_lists = ReadTxt(file_path)
+    # flatten the 2D tokens list
+    return [token for tokens in line_tokens_lists for token in tokens]
+
+```
+
+test code:
+```python
+from gensim import corpora
+from test_gensim.dictionary.read_files import preprocess_dir
+
+dir_tokens = preprocess_dir('../resources/')
+my_dict = corpora.Dictionary()
+for file_path, file_tokens in dir_tokens.items():
+    print('file is {}, tokens is {}'.format(file_path,file_tokens))
+
+    corpus = my_dict.doc2bow(file_tokens, allow_update=True)
+    word_counts = [(my_dict[token_id], count) for token_id, count in corpus]
+    print('corpus is {}'.format(word_counts))
+
+```
+
+output:
+```
+file is ../resources/CN104188073B.seg, tokens is ['大头菜', '自然风', ......'套在', '粘在', '网袋']
+corpus is [('一体', 5), ('一定', 2), ('上下', 1) ...... ('需要', 3), ('食品', 1), ('食用', 2)]
+file is ../resources/CN105253527A.seg, tokens is ['海绵拔', '机构', '特征', ...... '设有', '滚子', '轴承']
+corpus is [('之间', 3), ('包括', 1), ('固定', 1) ...... ('调节', 1), ('轴承', 2), ('辊轴', 5), ('过度', 2)]
 ```
