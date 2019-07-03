@@ -9,7 +9,7 @@
 # @Time: 7/1/2019 15:36
 
 from gensim import corpora
-from test_gensim.dictionary.read_files import ReadTxtUnderDir
+from test_gensim.dictionary.read_files import preprocess_dir
 from test_gensim.dictionary.gen_token_list import *
 
 
@@ -35,11 +35,17 @@ def test_gen_dict_from_file(seg_file):
     print('dict is {}'.format(dict_from_file.token2id))
 
 
-def test_gen_dit_from_files(test_dir):
-    dict_from_files = corpora.Dictionary(ReadTxtUnderDir(test_dir))
-    print('dictionary is {}'.format(dict_from_files.token2id))
-
-
-# test_gen_dict_from_list()
 # test_gen_dict_from_file('../resources/CN105253527A.seg')
-test_gen_dit_from_files('../resources/')
+# test_gen_dit_from_files('../resources/')
+
+dir_tokens = preprocess_dir('../resources/')
+my_dict = corpora.Dictionary()
+for file_path, file_tokens in dir_tokens.items():
+    print('file is {}'.format(file_path))
+
+    for token in file_tokens:
+        print('new text is {}'.format(token))
+
+    corpus2 = my_dict.doc2bow(file_tokens, allow_update=True)
+    word_counts2 = [(my_dict[token_id], count) for token_id, count in corpus2]
+    print('corpus is {}'.format(word_counts2))
