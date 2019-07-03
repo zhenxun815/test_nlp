@@ -9,8 +9,8 @@
 # @Time: 7/1/2019 15:36
 
 from gensim import corpora
-from test_gensim.dictionary.read_files import preprocess_dir
 from test_gensim.dictionary.gen_token_list import *
+from test_gensim.dictionary.read_files import preprocess_dir
 
 
 def test_gen_dict_from_list():
@@ -41,11 +41,8 @@ def test_gen_dict_from_file(seg_file):
 dir_tokens = preprocess_dir('../resources/')
 my_dict = corpora.Dictionary()
 for file_path, file_tokens in dir_tokens.items():
-    print('file is {}'.format(file_path))
+    print('file is {}, tokens is {}'.format(file_path,file_tokens))
 
-    for token in file_tokens:
-        print('new text is {}'.format(token))
-
-    corpus2 = my_dict.doc2bow(file_tokens, allow_update=True)
-    word_counts2 = [(my_dict[token_id], count) for token_id, count in corpus2]
-    print('corpus is {}'.format(word_counts2))
+    corpus = my_dict.doc2bow(file_tokens, allow_update=True)
+    word_counts = [(my_dict[token_id], count) for token_id, count in corpus]
+    print('corpus is {}'.format(word_counts))
