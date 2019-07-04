@@ -9,6 +9,8 @@
 # @Time: 7/2/2019 16:51
 from test_gensim.dictionary.gen_token_list import *
 from gensim.corpora import Dictionary
+from test_gensim.common_utils.corpus_utils import save2disk, load_from_disk
+from test_gensim.common_utils.token_utils import get_token_lists_of_docs
 
 
 def create_corpus(docs, my_dict):
@@ -35,3 +37,21 @@ def test_create_corpus():
     print('corpus is {}'.format(corpus))
 
     print_corpus_human_readable(dictionary, corpus)
+
+
+def test_save_load():
+    dct = Dictionary()
+    docs = ['一种 大头菜 自然风', '风 主要 包括 大头菜 风', '架 主要 包括 底座 支柱']
+    docs_token_list = get_token_lists_of_docs(docs)
+    dct.add_documents(docs_token_list)
+    corpus = [dct.doc2bow(['大头菜', '风', '底座'])]
+    print('corpus to save is {}'.format(corpus))
+    save_path = 'resources/corpus/test_corpus.mm'
+
+    save2disk(save_path, corpus)
+    load_corpus = load_from_disk(save_path)
+    print('load corpus is {}'.format(load_corpus))
+
+
+if __name__ == '__main__':
+    test_save_load()
