@@ -38,11 +38,12 @@ def test_gen_dict_from_file(seg_file):
 # test_gen_dict_from_file('../resources/CN105253527A.seg')
 # test_gen_dit_from_files('../resources/')
 
-dir_tokens = preprocess_dir('../resources/')
-my_dict = corpora.Dictionary()
-for file_path, file_tokens in dir_tokens.items():
-    print('file is {}, tokens is {}'.format(file_path,file_tokens))
+if __name__ == '__main__':
+    dir_tokens = preprocess_dir('../resources/')
+    my_dict = corpora.Dictionary()
+    for file_path, file_tokens in dir_tokens.items():
+        print('file is {}, tokens is {}'.format(file_path, file_tokens))
 
-    corpus = my_dict.doc2bow(file_tokens, allow_update=True)
-    word_counts = [(my_dict[token_id], count) for token_id, count in corpus]
-    print('corpus is {}'.format(word_counts))
+        corpus = my_dict.doc2bow(file_tokens, allow_update=True)
+        word_counts = [(my_dict[token_id], count) for token_id, count in corpus]
+        print('corpus is {}'.format(word_counts))
