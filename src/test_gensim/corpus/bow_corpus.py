@@ -11,8 +11,8 @@
 
 import os
 
-from gensim.corpora import Dictionary
-from test_gensim.dictionary.read_files import preprocess_file
+from test_gensim.common_utils.dct_utils import gen_dictionary_of_dir
+from test_gensim.common_utils.token_utils import get_tokens_of_file
 
 
 class BoWCorpus:
@@ -30,31 +30,12 @@ class BoWCorpus:
                 continue
 
             file_path = os.path.join(self.dir_path, file_name)
-            file_tokens = preprocess_file(file_path)
+            file_tokens = get_tokens_of_file(file_path)
             yield (file_name, self.dictionary.doc2bow(file_tokens))
 
 
-def get_dictionary_of_dir(dir_path):
-    """
-    Generate a Dictionary of text files under the given dir
-    :rtype: Dictionary
-    :param dir_path:
-    :return:
-    """
-    dictionary = Dictionary()
-    for file_name in os.listdir(dir_path):
-        if not file_name.endswith('seg'):
-            continue
-
-        file_path = os.path.join(dir_path, file_name)
-        file_tokens = [preprocess_file(file_path)]
-        dictionary.add_documents(file_tokens)
-
-    return dictionary
-
-
 if __name__ == '__main__':
-    dir_dictionary = get_dictionary_of_dir('../resources')
+    dir_dictionary = gen_dictionary_of_dir('../resources')
     for file_corpus in BoWCorpus(dir_dictionary, '../resources'):
         file_name = file_corpus[0]
         corpus = [(dir_dictionary[index], count) for index, count in file_corpus[1]]
