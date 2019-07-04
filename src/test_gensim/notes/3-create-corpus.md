@@ -1,4 +1,4 @@
-##Create Corpus
+## Create Corpus
 
 **_Corpus_**_(a Bag of Words)_, it is a object that contains the _**word id**_ and its 
 **_frequency_** in **_each document_**.We can think of it as gensim’s equivalent of 
