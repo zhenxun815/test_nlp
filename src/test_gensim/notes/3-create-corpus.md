@@ -117,7 +117,7 @@ Now, we can see the out put like this:
 ]
 ```
 
-#### 3. Example of Creating from Files
+#### 3. Example of Creating Bag of Words from Files
 
 ```python
 import os
@@ -126,9 +126,9 @@ from gensim.corpora import Dictionary
 from test_gensim.dictionary.read_files import preprocess_file
 
 
-class BoWCorpus:
+class BagOfWords:
     """Generator class, each time yield a 2 elements tuple, 1st element is file name, 
-    the 2nd element is corpus of the file.
+    the 2nd element is bag-of-words of the file.
     """
     
     def __init__(self, dictionary, dir_path):
@@ -166,19 +166,67 @@ def get_dictionary_of_dir(dir_path):
 # test block
 if __name__ == '__main__':
     dir_dictionary = get_dictionary_of_dir('../resources')
-    for file_corpus in BoWCorpus(dir_dictionary, '../resources'):
-        file_name = file_corpus[0]
-        corpus = [(dir_dictionary[index], count) for index, count in file_corpus[1]]
+    for file_bow in BagOfWords(dir_dictionary, '../resources'):
+        file_name = file_bow[0]
+        bow = [(dir_dictionary[index], count) for index, count in file_bow[1]]
         print('file_name is: {}'.format(file_name))
-        print('corpus is {}'.format(corpus))
+        print('bow is {}'.format(bow))
 ```
 
 output:
 
 ```
 file_name is: CN104188073B.seg
-corpus is [('一体', 5), ('一定', 2), ('上下', 1)......('雨淋', 1), ('需要', 3), ('食品', 1), ('食用', 2)]
+bow is [('一体', 5), ('一定', 2), ('上下', 1)......('雨淋', 1), ('需要', 3), ('食品', 1), ('食用', 2)]
 file_name is: CN105253527A.seg
-corpus is [('之间', 3), ('包括', 1), ('固定', 1)...... ('轴承', 2), ('辊轴', 5), ('过度', 2)]
+bow is [('之间', 3), ('包括', 1), ('固定', 1)...... ('轴承', 2), ('辊轴', 5), ('过度', 2)]
 
+```
+
+#### 4. Example of Saving Corpus to Disk and Loading it Back
+
+```python
+import os
+from gensim.corpora import Dictionary, MmCorpus
+
+def save2disk(save_path, corpus):
+    if not os.path.exists(save_path):
+        open(save_path, 'w', encoding='utf-8').close()
+
+    MmCorpus.serialize(save_path, corpus)
+
+
+def load_from_disk(load_path):
+    return MmCorpus(load_path)
+
+    
+#test block:
+if __name__ == '__main__':
+    dct = Dictionary()
+    docs = ['一种 大头菜 自然风', '风 主要 包括 大头菜 风', '架 主要 包括 底座 支柱']
+    docs_token_list = [doc.split() for doc in docs]
+    dct.add_documents(docs_token_list)
+    corpus = [dct.doc2bow(['大头菜', '风', '底座'])]
+    print('corpus to save is {}'.format(corpus))
+    save_path = 'resources/corpus/test_corpus.mm'
+
+    save2disk(save_path, corpus)
+    load_corpus = load_from_disk(save_path)
+    print('load corpus is {}'.format(load_corpus))
+
+```
+
+output is:
+```
+corpus to save is [[(1, 1), (5, 1), (6, 1)]]
+load corpus is MmCorpus(1 documents, 7 features, 3 non-zero entries)
+```
+
+the content of test_corpus.mm is:
+```
+%%MatrixMarket matrix coordinate real general
+1 7 3                                             
+1 2 1
+1 6 1
+1 7 1
 ```
