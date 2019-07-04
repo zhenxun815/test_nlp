@@ -1,5 +1,6 @@
 ## Create Dictionary
 
+#### 1. Core Objects and Functions
 ```
 gensim.corpora.Dictionary
 
@@ -48,7 +49,7 @@ list of str
 
 ```
  
-#### 1.Create from Lists of Sentences
+#### 2. Example of Creating from List of Sentences
 ```python
 from gensim import corpora
 from gensim.utils import simple_preprocess
@@ -82,7 +83,7 @@ after add texts1, dictionary is {'一种': 0, '大头菜': 1, '自然风': 2 ...
 after add texts2, dictionary is {'一种': 0, '大头菜': 1, '自然风': 2 ...... '二': 16, '同步': 17, '皮带轮': 18}
 ```
 
-#### 2.Create from File of Tokens
+#### 3. Example of Creating from Single File
   Read a file line-by-line and use gensim’s simple_preprocess to process 
   one line of the file at a time.
   The advantage here is it let us read an entire text file without loading 
@@ -115,7 +116,7 @@ output:
 dict is {'一': 0, '上': 1, '其': 2, '包括': 3, ...... '与': 43, '滚子': 44}
 ```
 
-#### 3.Create from Files of Tokens
+#### 4. Example of Creating from Files of Tokens
 
 ```python
 import os

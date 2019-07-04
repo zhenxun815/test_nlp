@@ -1,4 +1,4 @@
-##Create Corpus
+## Create Corpus
 
 **_Corpus_**_(a Bag of Words)_, it is a object that contains the _**word id**_ and its 
 **_frequency_** in **_each document_**.We can think of it as gensim’s equivalent of 
@@ -6,7 +6,8 @@ a **_[Document-Term matrix](https://en.wikipedia.org/wiki/Document-term_matrix)_
 
 Once we have the updated dictionary, all we need to do to create a bag of words corpus 
 is to pass the tokenized list of words to the `Dictionary.doc2bow()`
-
+---
+##### 1. Core Objects and Functions
 ```
 gensim.corpora.Dictionary.doc2bow(self, document, allow_update=False, return_missing=False)
 
@@ -39,7 +40,7 @@ Examples
 ([(2, 1)], {u'this': 1, u'is': 1})
 
 ```
-
+#### 2.Example of Creating from List of Sentences
 ```python
 
 from test_gensim.dictionary.gen_token_list import *
@@ -53,15 +54,16 @@ def create_corpus(docs, my_dict):
     print('after call doc2bow, dictionary is {}'.format(my_dict.token2id))
     return corpus
 
-
-dictionary = Dictionary()
-documents1 = ['一种 大头菜 自然风', '风 主要 包括 大头菜 风', '架 主要 包括 底座 支柱']
-corpus = create_corpus(documents1, dictionary)
-print('corpus is {}'.format(corpus))
-
-documents2 = ['一种 海绵拔 轮', '支架 上 设有 海绵 辊轴', '同步 皮带轮 二 海绵 辊轴']
-corpus = create_corpus(documents2, dictionary)
-print('corpus is {}'.format(corpus))
+# test block
+if __name__ == '__main__':
+    dictionary = Dictionary()
+    documents1 = ['一种 大头菜 自然风', '风 主要 包括 大头菜 风', '架 主要 包括 底座 支柱']
+    corpus = create_corpus(documents1, dictionary)
+    print('corpus is {}'.format(corpus))
+    
+    documents2 = ['一种 海绵拔 轮', '支架 上 设有 海绵 辊轴', '同步 皮带轮 二 海绵 辊轴']
+    corpus = create_corpus(documents2, dictionary)
+    print('corpus is {}'.format(corpus))
 
 ```
 
@@ -115,3 +117,68 @@ Now, we can see the out put like this:
 ]
 ```
 
+#### 3. Example of Creating from Files
+
+```python
+import os
+
+from gensim.corpora import Dictionary
+from test_gensim.dictionary.read_files import preprocess_file
+
+
+class BoWCorpus:
+    """Generator class, each time yield a 2 elements tuple, 1st element is file name, 
+    the 2nd element is corpus of the file.
+    """
+    
+    def __init__(self, dictionary, dir_path):
+        self.dictionary = dictionary
+        self.dir_path = dir_path
+
+    def __iter__(self):
+        for file_name in os.listdir(self.dir_path):
+            if not file_name.endswith('seg'):
+                continue
+
+            file_path = os.path.join(self.dir_path, file_name)
+            file_tokens = preprocess_file(file_path)
+            yield (file_name, self.dictionary.doc2bow(file_tokens))
+
+
+def get_dictionary_of_dir(dir_path):
+    """
+    Generate a Dictionary of text files under the given dir
+    :rtype: Dictionary
+    :param dir_path:
+    :return:
+    """
+    dictionary = Dictionary()
+    for file_name in os.listdir(dir_path):
+        if not file_name.endswith('seg'):
+            continue
+
+        file_path = os.path.join(dir_path, file_name)
+        file_tokens = [preprocess_file(file_path)]
+        dictionary.add_documents(file_tokens)
+
+    return dictionary
+
+# test block
+if __name__ == '__main__':
+    dir_dictionary = get_dictionary_of_dir('../resources')
+    for file_corpus in BoWCorpus(dir_dictionary, '../resources'):
+        file_name = file_corpus[0]
+        corpus = [(dir_dictionary[index], count) for index, count in file_corpus[1]]
+        print('file_name is: {}'.format(file_name))
+        print('corpus is {}'.format(corpus))
+```
+
+output:
+
+```
+file_name is: CN104188073B.seg
+corpus is [('一体', 5), ('一定', 2), ('上下', 1)......('雨淋', 1), ('需要', 3), ('食品', 1), ('食用', 2)]
+file_name is: CN105253527A.seg
+corpus is [('之间', 3), ('包括', 1), ('固定', 1)...... ('轴承', 2), ('辊轴', 5), ('过度', 2)]
+
+```
