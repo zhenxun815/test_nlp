@@ -120,7 +120,7 @@ tf-idf model info of doc 2 is:
 ```
 Let's look at the output of doc 0, in the bow paragraph, the term '大头菜' occurs 3 times, 
 one more time than the occurrence of term '自然风'. It seems that '大头菜' is more important than '自然风', 
-but in the tf-idf model paragraph, wo will find '大头菜' has a lower weight 0.31 in comparison 
+but in the tf-idf model paragraph, we will find '大头菜' has a lower weight 0.31 in comparison 
 with '自然风', who's weight is 0.55.  
 A high weight in tf–idf is reached by a high term frequency (in the given document) and a low document 
 frequency of the term in the whole collection of documents; the weights hence tend to filter out common terms.
