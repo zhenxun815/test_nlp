@@ -35,3 +35,13 @@ each word’s id and its frequency count in that document.  As a result, informa
 
 > **_dictionary_** _字典_:  
 Typically used to create corpus, it maps each word to a unique id
+
+> **_tf-idf_**:  
+Short for _**T**erm **F**requency–**I**nverse **D**ocument **F**requency_, is a numerical statistic 
+that is intended to reflect how important a word is to a document in a collection or corpus.  
+>>**_term frequency, tf_**  _词频_:  
+Typically means the **weight** of a term that occurs in a document, which is proportional to the number 
+of times the term occurs and the length of the term's owner document.   
+>>**_inverse document frequency, idf_** _逆向文件频率_:  
+Typically means the **importance** of a term: it's common or rare across all documents.
+
