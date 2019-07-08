@@ -118,6 +118,7 @@ tf-idf model info of doc 2 is:
 
 
 ```
+Notice the difference in weights of the words between the original corpus and the tfidf weighted corpus.
 Let's look at the output of doc 0, in the bow paragraph, the term '大头菜' occurs 3 times, 
 one more time than the occurrence of term '自然风'. It seems that '大头菜' is more important than '自然风', 
 but in the tf-idf model paragraph, we will find '大头菜' has a lower weight 0.31 in comparison 
