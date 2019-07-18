@@ -1,39 +1,44 @@
-# !/usr/bin/python
-# coding=utf-8
-# 采用Word2Vec词聚类方法抽取关键词2——根据候选关键词的词向量进行聚类分析
-import sys, os
-from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import math
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# @Description: 采用Word2Vec词聚类方法抽取关键词2——根据候选关键词的词向量进行聚类分析
+# @File: test_word2vec.py
+# @Project: test_nlp
+# @Author: Yiheng
+# @Email: GuoYiheng89@gmail.com
+# @Time: 7/1/2019 14:48
+#
 import json
-from pprint import pprint
+import os
+
+import math
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
 
 
 def gen_data(path):
-    titlelist = []
-    abslist = []
-    file = open(path, 'rb')
-    for line in file.readlines():
-        dic = json.loads(line)
-        titlelist.append(dic['title'])
-        abslist.append(dic['abs'])
+    title_list = []
+    abs_list = []
+    with open(path, 'rb') as file:
+        for line in file.readlines():
+            dic = json.loads(line)
+            title_list.append(dic['title'])
+            abs_list.append(dic['abs'])
 
-    sumlist = {
-        "title": titlelist,
-        "abstract": abslist}
+    sumlist = {"title":    title_list,
+               "abstract": abs_list}
+
     data = pd.DataFrame(sumlist)
     shape = data.shape[0]
-    idlist = list(range(1, shape + 1))
-    data['id'] = idlist
+    id_list = list(range(1, shape + 1))
+    data['id'] = id_list
     return data
 
 
 # 对词向量采用K-means聚类抽取TopK关键词
-def getkeywords_kmeans(data, topK):
-    words = data["word"]  # 词汇
+def get_keywords_kmeans(data, topK):
+    words = data['word']  # 词汇
     vecs = data.iloc[:, :-1]  # 向量表示
     # print('vecs is {}'.format(vecs))
     kmeans = KMeans(n_clusters=1, random_state=10).fit(vecs)
@@ -85,32 +90,32 @@ def getkeywords_kmeans(data, topK):
 
 def main():
     # 读取数据集
-    dataFile = 'data/raw_docs.json'
-    articleData = pd.read_json(dataFile, encoding='utf-8', lines=True)
+    raw_doc_file = 'data/raw_docs.json'
+    article_data = pd.read_json(raw_doc_file, encoding='utf-8', lines=True)
     ids, titles, keys = [], [], []
 
-    rootdir = "result/vecs"  # 词向量文件根目录
-    fileList = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
+    vec_files_dir = "result/vecs"  # 词向量文件根目录
+    vec_file_list = os.listdir(vec_files_dir)  # 列出文件夹下所有的目录与文件
     # 遍历文件
-    task_count = len(fileList)
+    task_count = len(vec_file_list)
     for i in range(task_count):
         print('task remain {}'.format(task_count - i))
-        filename = fileList[i]
-        path = os.path.join(rootdir, filename)
-        print('vec file path is {}'.format(path))
-        if os.path.isfile(path) and path.endswith('json'):
-            data = pd.read_json(path, encoding='utf-8', lines=False)  # 读取词向量文件数据
+        vec_file_name = vec_file_list[i]
+        vec_file_path = os.path.join(vec_files_dir, vec_file_name)
+        print('vec file path is {}'.format(vec_file_path))
+        if os.path.isfile(vec_file_path) and vec_file_path.endswith('json'):
+            data = pd.read_json(vec_file_path, encoding='utf-8', lines=False)  # 读取词向量文件数据
             # print('frame data is {}'.format(data))
-            artile_keys = getkeywords_kmeans(data, 10)  # 聚类算法得到当前文件的关键词
+            article_keys = get_keywords_kmeans(data, 10)  # 聚类算法得到当前文件的关键词
             # 根据文件名获得文章id以及标题
-            (shortname, extension) = os.path.splitext(filename)  # 得到文件名和文件扩展名
+            (shortname, extension) = os.path.splitext(vec_file_name)  # 得到文件名和文件扩展名
             t = shortname.split("_")
             article_id = int(t[len(t) - 1])  # 获得文章id
-            artile_tit = articleData.iloc[article_id - 1]['title']  # 获得文章标题
+            article_title = article_data.iloc[article_id - 1]['title']  # 获得文章标题
             # artile_tit = list(artile_tit)[0]  # series转成字符串
             ids.append(article_id)
-            titles.append(artile_tit)
-            keys.append(artile_keys.encode("utf-8"))
+            titles.append(article_title)
+            keys.append(article_keys.encode("utf-8"))
 
     # 所有结果写入文件
     result = pd.DataFrame({"id": ids, "title": titles, "key": keys}, columns=['id', 'title', 'key'])
